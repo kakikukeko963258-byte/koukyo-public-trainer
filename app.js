@@ -11,7 +11,8 @@ const state = {
   quiz: null,
   practice: null,
   listKind: "terms",
-  query: ""
+  query: "",
+  nextLockedUntil: 0
 };
 
 const view = document.querySelector("#view");
@@ -141,6 +142,7 @@ function tagsHtml(tags) {
 function renderStudy() {
   const card = currentStudyCard();
   floatingNext.hidden = false;
+  floatingNext.textContent = state.revealed ? "次へ" : "答え";
 
   if (!card) {
     statusChip.textContent = "0 / 0";
@@ -197,15 +199,17 @@ function makeQuizQuestion() {
 }
 
 function renderQuiz() {
-  floatingNext.hidden = false;
   if (!state.quiz) state.quiz = makeQuizQuestion();
 
   if (!state.quiz) {
+    floatingNext.hidden = true;
     statusChip.textContent = "0問";
     view.innerHTML = `<div class="empty">この条件の小テスト問題がありません。</div>`;
     return;
   }
 
+  floatingNext.hidden = !state.quiz.answered;
+  floatingNext.textContent = "次へ";
   statusChip.textContent = "小テスト";
   view.innerHTML = questionHtml(state.quiz, "quiz");
 }
@@ -252,6 +256,7 @@ function answerQuiz(choice) {
   state.quiz.selected = choice;
   state.quiz.correct = choice === state.quiz.answer;
   state.quiz.answered = true;
+  state.nextLockedUntil = Date.now() + 450;
   if (!state.quiz.correct) recordMiss(state.quiz, choice || "わからない");
   render();
 }
@@ -276,17 +281,18 @@ function startPractice() {
 }
 
 function renderPractice() {
-  floatingNext.hidden = false;
   if (!state.practice) startPractice();
 
   const practice = state.practice;
   if (!practice.questions.length) {
+    floatingNext.hidden = true;
     statusChip.textContent = "0問";
     view.innerHTML = `<div class="empty">この条件の実戦問題がありません。</div>`;
     return;
   }
 
   if (practice.done) {
+    floatingNext.hidden = true;
     const total = practice.questions.length;
     statusChip.textContent = `${practice.score} / ${total}`;
     view.innerHTML = `
@@ -317,6 +323,8 @@ function renderPractice() {
   }
 
   const current = practice.questions[practice.index];
+  floatingNext.hidden = !current.answered;
+  floatingNext.textContent = "次へ";
   statusChip.textContent = `${practice.index + 1} / ${practice.questions.length}`;
   const percent = Math.round((practice.index / practice.questions.length) * 100);
   view.innerHTML = `
@@ -335,6 +343,7 @@ function answerPractice(choice) {
   question.selected = choice;
   question.correct = choice === question.answer;
   question.answered = true;
+  state.nextLockedUntil = Date.now() + 450;
   if (question.correct) practice.score += 1;
   if (!question.correct) recordMiss(question, choice || "わからない");
   render();
@@ -510,7 +519,7 @@ function setMode(mode) {
 }
 
 function render() {
-  document.body.dataset.mode = state.mode;
+  document.body.dataset.currentMode = state.mode;
   if (state.mode === "study") renderStudy();
   if (state.mode === "quiz") renderQuiz();
   if (state.mode === "practice") renderPractice();
@@ -526,6 +535,8 @@ function populateCategories() {
 }
 
 document.addEventListener("click", (event) => {
+  if (event.target === floatingNext || floatingNext.contains(event.target)) return;
+
   const modeButton = event.target.closest("[data-mode]");
   if (modeButton) {
     setMode(modeButton.dataset.mode);
@@ -620,7 +631,11 @@ document.querySelector("#shuffleButton").addEventListener("click", () => {
   render();
 });
 
-floatingNext.addEventListener("click", () => {
+floatingNext.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  if (Date.now() < state.nextLockedUntil) return;
+
   if (state.mode === "study") {
     if (!state.revealed) {
       state.revealed = true;

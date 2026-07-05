@@ -556,7 +556,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .answer-actions .good {
+  body[data-current-mode="study"] .answer-actions .good {
     display: none;
   }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "koukyo-public-v2";
+const CACHE_NAME = "koukyo-public-v4";
 const ASSETS = [
   "./",
   "./index.html",
