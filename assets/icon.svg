@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="公共">
+  <rect width="120" height="120" rx="20" fill="#f7f9fc"/>
+  <path d="M24 90h72M31 82h58M39 42h42M47 42v34M60 42v34M73 42v34" fill="none" stroke="#344e7a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M60 18 25 38h70L60 18Z" fill="#e6bf55" stroke="#344e7a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M35 71c9 4 17 4 25 0 8 4 16 4 25 0" fill="none" stroke="#b45144" stroke-width="6" stroke-linecap="round"/>
+</svg>

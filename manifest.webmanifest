@@ -1,0 +1,17 @@
+{
+  "name": "公共テスト対策",
+  "short_name": "公共",
+  "description": "私法・契約・消費者・司法・刑事司法を暗記できるオフライン対応アプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#344e7a",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
